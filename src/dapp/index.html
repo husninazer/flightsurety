@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>FlightSurety</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">FlightSurety</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main class="container">
+
+        <div id="display-wrapper" class="top-20">
+        </div>
+        <div class="row top-20">
+            <label class="form">Flight Status Info</label>
+            <select id="flight-number">
+              <option disabled selected>Select a Flight</option>
+            </select>
+            <btn class="btn btn-primary" id="submit-oracle">Get Info</btn>
+        </div>
+
+        <br><br><br><hr>
+
+        <div class="row top-20">
+            <label class="form">Add Airline</label>
+            <input placeholder="Airline Account" size="50" type="text" id="airline-address">
+            <input placeholder="Airline Name" type="text" id="airline-name">
+
+            <btn class="btn btn-primary" id="submit-airline-add">Add Airline</btn>
+        </div>
+
+        <br><br><br><hr>
+
+        <div class="row top-20">
+            <label class="form">Add Flight</label>
+            <select id="airlines-selection">
+              <option disabled selected>Select an Airline</option>
+
+
+            </select>
+            <input placeholder="Flight Number" type="text" id="txt-flight-number">
+
+            <btn class="btn btn-primary" id="submit-flight-add">Add Flight</btn>
+        </div>
+
+        <br><br><br><hr>
+
+        <div class="row top-20">
+            <label class="form">Purchase Insurance for Flight</label>
+            <select id="flights-selection">
+              <option disabled selected>Select a Flight</option>
+            </select>
+            <pre></pre>
+            <btn class="btn btn-primary" id="submit-flight-insurance">Buy</btn>
+        </div>
+
+        <br><br><br><hr>
+
+            <h3 id="head-balance">Credit Balance: </h3><br>
+            <btn class="btn btn-primary" id="submit-check-balance">Check Balance</btn>
+
+        <br><hr>
+          <div class="row">
+            <btn class="btn btn-success btn-large" id="submit-claim-insurance">Claim Balance Amount</btn>
+          </div>
+
+
+
+
+    </main>
+
+</body>
+
+</html>
