@@ -27,7 +27,6 @@ contract FlightSuretyApp {
 
     uint8 private constant INSURANCE_COST = 1;
 
-
     address private contractOwner;          // Account used to deploy contract
 
     struct Flight {
@@ -86,7 +85,7 @@ contract FlightSuretyApp {
         flightSuretyData = FlightSuretyData(dataContract);
 
         //Register first airline
-       flightSuretyData.registerAirline(msg.sender, "Saudi Arabian Airlines", false);
+       flightSuretyData.registerAirline(msg.sender, "Saudi Arabian Airlines", contractOwner, false);
     }
 
     /********************************************************************************************/
@@ -118,9 +117,10 @@ contract FlightSuretyApp {
                             public
                             returns(bool success)
     {
-        flightSuretyData.registerAirline(_airlineAddress, _airlineName, false);
+        flightSuretyData.registerAirline(_airlineAddress, _airlineName, msg.sender, false);
         return true;
     }
+
 
 
 
@@ -174,6 +174,22 @@ contract FlightSuretyApp {
     {
       uint32 balance= flightSuretyData.pay(msg.sender);
       msg.sender.transfer(balance);
+    }
+
+
+    // Fee to be paid when registering oracle
+    uint256 public constant AIRLINE_REGISTRATION_FEE = 10 ether;
+
+    // Airline Fund
+    function airlineFund
+                            (
+                            )
+                            public
+                            payable
+    {
+      require(msg.value >= AIRLINE_REGISTRATION_FEE, "Funds Insufficient");
+      flightSuretyData.airlineFund(msg.sender);
+      msg.sender.transfer(msg.value);
     }
 
 
@@ -406,6 +422,7 @@ contract FlightSuretyData {
                           (
                             address _airlineAddress,
                             string _airlineName,
+                            address _registeringAirline,
                             bool funded
                           )
                           external;
@@ -437,5 +454,13 @@ contract FlightSuretyData {
                           )
                           external
                           returns (uint32);
+
+  function airlineFund
+                        (
+                          address _airlineAddress
+                        )
+                        payable
+                        public
+                        returns(bool success);
 
 }

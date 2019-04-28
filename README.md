@@ -11,6 +11,7 @@ To install, download or clone the repo, then:
 `npm install`
 `truffle compile`
 
+  Truffle running on 9545 port 
 ## Develop Client
 
 To run truffle tests:

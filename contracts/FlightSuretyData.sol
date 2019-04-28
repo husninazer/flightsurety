@@ -32,13 +32,15 @@ contract FlightSuretyData {
     }
 
 
-    address[] public airlinesRegistered;
-    mapping(address => Airline) public airlines;
+    address[] private airlinesRegistered;
+    mapping(address => Airline) private airlines;
 
-    uint32[] public flightsRegistered;
-    mapping(uint32 => Flight) flights;
+    uint32[] private flightsRegistered;
+    mapping(uint32 => Flight) private flights;
 
-    mapping(address => PassengerProfile) passengers;
+    mapping(address => PassengerProfile) private passengers;
+
+    mapping(address => uint256) private authorized;
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
@@ -108,6 +110,27 @@ contract FlightSuretyData {
         return operational;
     }
 
+    //Authorize caller
+    function authorizeCaller
+                          (
+                            address contractAddress
+                          )
+                           external
+                          requireContractOwner
+    {
+        authorized[contractAddress] = 1;
+    }
+    function deauthorizeCaller
+                          (
+                            address contractAddress
+                          )
+                           external
+                           requireContractOwner
+    {
+        authorized[contractAddress] = 0;
+
+    }
+
 
     /**
     * @dev Sets contract operations on/off
@@ -154,6 +177,9 @@ contract FlightSuretyData {
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
+
+    uint constant M = 4;
+    mapping(address => address[]) multiCalls;
    /**
     * @dev Add an airline to the registration queue
     *      Can only be called from FlightSuretyApp contract
@@ -163,6 +189,7 @@ contract FlightSuretyData {
                             (
                               address _airlineAddress,
                               string _airlineName,
+                              address _registeringAirline,
                               bool _funded
                             )
                             external
@@ -175,12 +202,58 @@ contract FlightSuretyData {
         }
         require(unique, "Airline already Added");
 
-        airlinesRegistered.push(_airlineAddress);
-        airlines[_airlineAddress] = Airline ({
-        airlineAddress: _airlineAddress,
-        airlineName: _airlineName,
-        funded: _funded
-      });
+        //Check if the registering airline is funded
+        require(airlines[_registeringAirline].funded == true || _registeringAirline == contractOwner, "Cannot register an Airline unless funded by sending airline");
+
+        if (airlinesRegistered.length < M) {
+          airlinesRegistered.push(_airlineAddress);
+          airlines[_airlineAddress] = Airline ({
+          airlineAddress: _airlineAddress,
+          airlineName: _airlineName,
+          funded: _funded
+          });
+        }
+
+        //ADD TO MULTI CALLS
+        else {
+          bool isDuplicate = false;
+            for(uint j=0; j< multiCalls[_airlineAddress].length; j++) {
+                if (multiCalls[_airlineAddress][j] == _registeringAirline) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            require(!isDuplicate, "Caller has already called this function.");
+            multiCalls[_airlineAddress].push(_registeringAirline);
+            if (multiCalls[_airlineAddress].length >= airlinesRegistered.length /2  ) {
+              airlinesRegistered.push(_airlineAddress);
+              airlines[_airlineAddress] = Airline ({
+              airlineAddress: _airlineAddress,
+              airlineName: _airlineName,
+              funded: _funded
+              });
+            }
+        }
+
+    }
+
+    // Check if it is an airline
+    function isAirline
+                            (
+                              address airlineAddress
+                            )
+                            external
+                            view
+                            returns(bool)
+    {
+        bool status = false;
+        for(uint i=0; i < airlinesRegistered.length; i++) {
+                    if (airlinesRegistered[i] == airlineAddress) {
+                    status = true;
+                }
+          }
+        return  status;
+
     }
 
     /**
@@ -276,10 +349,25 @@ contract FlightSuretyData {
         // check if it is a valid passenger
       require(passengers[_passenger].balance > 0, "No balance in wallet");
 
-      uint32 balance = passengers[_passenger].balance;
+      uint32 balance_passenger = passengers[_passenger].balance;
 
-      return balance;
+      return balance_passenger;
 
+    }
+
+
+    // Get fund from Airline
+    function airlineFund
+                          (
+                            address _airlineAddress
+                          )
+                          payable
+                          public
+                          returns(bool success)
+    {
+        require(airlines[_airlineAddress].funded == false , "Airline is already Funded");
+        airlines[_airlineAddress].funded = true;
+        return true;
     }
 
 
