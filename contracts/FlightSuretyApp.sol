@@ -114,6 +114,7 @@ contract FlightSuretyApp {
                               address _airlineAddress,
                               string _airlineName
                             )
+                            requireIsOperational()
                             public
                             returns(bool success)
     {
@@ -133,6 +134,7 @@ contract FlightSuretyApp {
                                   uint32 _flightNumber,
                                   address _airlineAddress
                                 )
+                                requireIsOperational()
                                 external
 
     {
@@ -158,10 +160,11 @@ contract FlightSuretyApp {
     function balance
                             (
                             )
+                            requireIsOperational()
                             external
-                            returns (uint32)
+                            returns (uint256)
     {
-        uint32 balance = flightSuretyData.balance(msg.sender);
+        uint256 balance = flightSuretyData.balance(msg.sender);
         return balance;
     }
 
@@ -446,7 +449,7 @@ contract FlightSuretyData {
                             address _passenger
                           )
                           external
-                          returns (uint32);
+                          returns (uint256);
 
   function pay
                           (

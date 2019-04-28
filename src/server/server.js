@@ -28,6 +28,7 @@ flightSuretyApp.events.OracleRequest({
     let timestamp = event.returnValues.timestamp;
     let statusCode = Math.floor(Math.random()*6)*10; // Status codes - 10, 20, 30, 40. 50
 
+
     //Loop through each oracles to find the index received.
     for(let i=0; i<oracles.length; i++) {
       if(oracle[i].indexes.include(indexReceived))
@@ -48,11 +49,13 @@ async function registerOracles(){
   let oracles = []
   let accounts = await web3.eth.getAccounts();
 
-  for(let i=5; i<10; i++) {
+  console.log("ACCOUNTS LENGTH", accounts.length);
+
+  for(let i=1; i<25; i++) {
     let registration = await flightSuretyApp.methods.registerOracle().send({from: accounts[i], value: web3.utils.toWei("1", "ether"), gas: 3000000});
   //  console.log("REGISTRATION", registration);
 
-    let indexes = await flightSuretyApp.methods.getMyIndexes().call({from: accounts[i]})
+    let indexes = await flightSuretyApp.methods.getMyIndexes().call({from: accounts[i]});
   //  console.log("INDEXES", indexes);
 
     oracles.push({oracle: accounts[i], indexes: indexes});

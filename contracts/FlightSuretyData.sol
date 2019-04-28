@@ -4,6 +4,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract FlightSuretyData {
     using SafeMath for uint256;
+    using SafeMath for uint32;
 
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
@@ -28,7 +29,7 @@ contract FlightSuretyData {
     }
 
     struct PassengerProfile {
-      uint32 balance;
+      uint256 balance;
     }
 
 
@@ -306,6 +307,7 @@ contract FlightSuretyData {
         });
     }
 
+    uint256 private INSURANCE_COST = 1;
     /**
      *  @dev Credits payouts to insurees
     */
@@ -317,7 +319,8 @@ contract FlightSuretyData {
 
     {
       for(uint i=0; i<flights[_flightNumber].passengers.length; i++) {
-        passengers[flights[_flightNumber].passengers[i]].balance += 2;
+        uint256 INSURANCE_PAYOUT = INSURANCE_COST.div(2).mul(3);
+        passengers[flights[_flightNumber].passengers[i]].balance +=  INSURANCE_PAYOUT;
       }
     }
 
@@ -327,7 +330,7 @@ contract FlightSuretyData {
                               address _passenger
                             )
                             external
-                            returns (uint32 balance)
+                            returns (uint256 balance)
 
     {
         return passengers[_passenger].balance;
@@ -344,12 +347,12 @@ contract FlightSuretyData {
                               address _passenger
                             )
                             external
-                            returns (uint32)
+                            returns (uint256)
     {
         // check if it is a valid passenger
       require(passengers[_passenger].balance > 0, "No balance in wallet");
 
-      uint32 balance_passenger = passengers[_passenger].balance;
+      uint256 balance_passenger = passengers[_passenger].balance;
 
       return balance_passenger;
 
