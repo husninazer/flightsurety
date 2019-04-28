@@ -49,9 +49,13 @@ async function registerOracles(){
   let oracles = []
   let accounts = await web3.eth.getAccounts();
 
-  console.log("ACCOUNTS LENGTH", accounts.length);
+  console.log("ACCOUNT S LENGTH ", accounts.length);
 
-  for(let i=1; i<25; i++) {
+  for(let i=2; i<22; i++) {
+    if(accounts[i] == undefined) continue; // Need to have atleast 21 accounts to test
+
+  //  console.log("ACCOUNT DETAILS", accounts[i]);
+
     let registration = await flightSuretyApp.methods.registerOracle().send({from: accounts[i], value: web3.utils.toWei("1", "ether"), gas: 3000000});
   //  console.log("REGISTRATION", registration);
 
